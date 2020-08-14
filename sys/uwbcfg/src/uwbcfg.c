@@ -21,7 +21,7 @@
 #include <stdio.h>
 
 #include <dpl/dpl.h>
-#include <log/log.h>
+#include <log/dpl_log.h>
 #include <syscfg/syscfg.h>
 #include <sysinit/sysinit.h>
 #include <config/config.h>

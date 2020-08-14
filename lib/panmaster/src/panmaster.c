@@ -2,7 +2,7 @@
 #include <dpl/dpl.h>
 #include <syscfg/syscfg.h>
 #include <sysinit/sysinit.h>
-#include <log/log.h>
+#include <log/dpl_log.h>
 #include <config/config.h>
 
 #include "panmaster/panmaster.h"
@@ -23,10 +23,10 @@ static uint16_t pan_id = 0x0000;
 static volatile int nodes_loaded = 0;
 
 #define LOG_MODULE_PAN_MASTER (91)
-#define PM_INFO(...)     LOG_INFO(&_log, LOG_MODULE_PAN_MASTER, __VA_ARGS__)
-#define PM_DEBUG(...)    LOG_DEBUG(&_log, LOG_MODULE_PAN_MASTER, __VA_ARGS__)
-#define PM_WARN(...)     LOG_WARN(&_log, LOG_MODULE_PAN_MASTER, __VA_ARGS__)
-#define PM_ERR(...)      LOG_ERROR(&_log, LOG_MODULE_PAN_MASTER, __VA_ARGS__)
+#define PM_INFO(...)     LOG_INFO(__VA_ARGS__)
+#define PM_DEBUG(...)    LOG_DEBUG(__VA_ARGS__)
+#define PM_WARN(...)     LOG_WARN(__VA_ARGS__)
+#define PM_ERR(...)      LOG_ERROR(__VA_ARGS__)
 static struct log _log;
 
 /*
