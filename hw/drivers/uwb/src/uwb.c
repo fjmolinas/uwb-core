@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #endif
 
-#ifndef (RIOT)
+#if !defined(RIOT)
 struct uwb_dev*
 uwb_dev_idx_lookup(int idx)
 {
