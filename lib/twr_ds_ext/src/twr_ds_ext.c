@@ -231,7 +231,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
                 uwb_set_rxauto_disable(inst, true);
 
                 if (uwb_start_tx(inst).start_tx_error){
-                    DS_STATS_INC(g_twr_ds_ext_stat, tx_error);
+                    DS_STATS_INC(tx_error);
                     dpl_sem_release(&rng->sem);
                 }
 
@@ -300,7 +300,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
                 uwb_set_rxauto_disable(inst, true);
 
                 if (uwb_start_tx(inst).start_tx_error){
-                    DS_STATS_INC(g_twr_ds_ext_stat, tx_error);
+                    DS_STATS_INC(tx_error);
                     dpl_sem_release(&rng->sem);
                 }
                 /* Setup when to listen for response, relative the end of our transmitted frame */
@@ -355,11 +355,11 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
                 uwb_rng_clear_twr_data(&frame->remote);
 
                 if (uwb_start_tx(inst).start_tx_error) {
-                    DS_STATS_INC(g_twr_ds_ext_stat, tx_error);
+                    DS_STATS_INC(tx_error);
                     dpl_sem_release(&rng->sem);
                     rng_issue_complete(inst);
                 }else{
-                    DS_STATS_INC(g_twr_ds_ext_stat, complete);
+                    DS_STATS_INC(complete);
                     rng->control.complete_after_tx = 1;
                 }
                 break;
@@ -369,7 +369,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
                 // This code executes on the device that initialed the original request, and has now receive the final response timestamp.
                 // This marks the completion of the double-single-two-way request.
 
-                DS_STATS_INC(g_twr_ds_ext_stat, complete);
+                DS_STATS_INC(complete);
                 dpl_sem_release(&rng->sem);
                 rng_issue_complete(inst);
                 break;

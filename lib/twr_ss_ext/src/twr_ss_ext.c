@@ -248,7 +248,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
                 uwb_set_delay_start(inst, txd.response_tx_delay);
 
                 if (uwb_start_tx(inst).start_tx_error){
-                    SS_STATS_INC(g_twr_ss_ext_stat, tx_error);
+                    SS_STATS_INC(tx_error);
                     dpl_sem_release(&rng->sem);
                 }
                 /* Setup when to listen for response, relative the end of our transmitted frame */
@@ -291,12 +291,12 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
                 uwb_set_delay_start(inst, txd.response_tx_delay);
 
                 if (uwb_start_tx(inst).start_tx_error){
-                    SS_STATS_INC(g_twr_ss_ext_stat, tx_error);
+                    SS_STATS_INC(tx_error);
                     dpl_sem_release(&rng->sem);
                     rng_issue_complete(inst);
                 }
                 else{
-                    SS_STATS_INC(g_twr_ss_ext_stat, complete);
+                    SS_STATS_INC(complete);
                     rng->control.complete_after_tx = 1;
                 }
                 break;
@@ -308,7 +308,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
                 if (inst->frame_len != sizeof(twr_frame_final_t))
                    break;
 
-                SS_STATS_INC(g_twr_ss_ext_stat, complete);
+                SS_STATS_INC(complete);
                 dpl_sem_release(&rng->sem);
                 rng_issue_complete(inst);
                 break;

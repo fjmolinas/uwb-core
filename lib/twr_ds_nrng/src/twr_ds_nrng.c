@@ -75,7 +75,7 @@ STATS_NAME_START(twr_ds_nrng_stat_section)
 STATS_NAME_END(twr_ds_nrng_stat_section)
 
 static STATS_SECT_DECL(twr_ds_nrng_stat_section) g_stat;
-#define DS_STATS_INC(__X) STATS_INC(rng->stat, __X)
+#define DS_STATS_INC(__X) STATS_INC(g_stat, __X)
 #else
 #define DS_STATS_INC(__X) {}
 #endif
@@ -145,7 +145,7 @@ rx_timeout_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs){
     if(inst->fctrl != FCNTL_IEEE_N_RANGES_16){
         return false;
     }
-    DS_STATS_INC(g_stat, rx_timeout);
+    DS_STATS_INC(rx_timeout);
     switch(inst->nrng->code){
         case UWB_DATA_CODE_DS_TWR_NRNG ... UWB_DATA_CODE_DS_TWR_NRNG_FINAL:
         {
@@ -189,7 +189,7 @@ rx_error_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs){
     if(inst->fctrl != FCNTL_IEEE_N_RANGES_16){
         return false;
     }
-    DS_STATS_INC(g_stat, rx_error);
+    DS_STATS_INC(rx_error);
     assert(inst->nrng);
     struct nrng_instance * nrng = inst->nrng;
     if(os_sem_get_count(&nrng->sem) == 0){
@@ -387,7 +387,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
                     if (cbs!=NULL && cbs->start_tx_error_cb)
                         cbs->start_tx_error_cb(inst, cbs);
                 }else{
-                    DS_STATS_INC(g_stat, complete);
+                    DS_STATS_INC(complete);
                     os_sem_release(&nrng->sem);
                     struct uwb_mac_interface * cbs = NULL;
                     if(!(SLIST_EMPTY(&inst->interface_cbs))){
@@ -436,7 +436,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
                 frame->transmission_timestamp = dw1000_read_txtime_lo(inst);
                 if(idx == nnodes -1)
                 {
-                    DS_STATS_INC(g_stat, complete);
+                    DS_STATS_INC(complete);
                     os_sem_release(&nrng->sem);
                     struct uwb_mac_interface * cbs = NULL;
                     if(!(SLIST_EMPTY(&inst->interface_cbs))){

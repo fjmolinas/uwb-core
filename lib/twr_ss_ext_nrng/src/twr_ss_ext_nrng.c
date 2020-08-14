@@ -151,7 +151,7 @@ rx_error_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs){
     }
     struct uwb_rng_instance * rng = inst->rng;
     if(os_sem_get_count(&rng->sem) == 0){
-        SS_STATS_INC(g_stat, rx_error);
+        SS_STATS_INC(rx_error);
         os_error_t err = os_sem_release(&rng->sem);
         assert(err == OS_OK);
         return true;
