@@ -31,6 +31,8 @@
 #else
 #include <stdlib.h>
 #endif
+
+#ifndef (RIOT)
 struct uwb_dev*
 uwb_dev_idx_lookup(int idx)
 {
@@ -48,6 +50,7 @@ uwb_dev_idx_lookup(int idx)
     return (struct uwb_dev*)odev;
 }
 EXPORT_SYMBOL(uwb_dev_idx_lookup);
+#endif
 
 /**
  * API to register extension  callbacks for different services.
