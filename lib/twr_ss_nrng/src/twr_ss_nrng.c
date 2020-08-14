@@ -52,6 +52,24 @@
 #define DIAGMSG(s,u)
 #endif
 
+#if MYNEWT_VAL(TWR_SS_NRNG_STATS)
+STATS_SECT_START(twr_ss_nrng_stat_section)
+    STATS_SECT_ENTRY(complete)
+    STATS_SECT_ENTRY(start_tx_error)
+STATS_SECT_END
+
+STATS_NAME_START(twr_ss_nrng_stat_section)
+    STATS_NAME(twr_ss_nrng_stat_section, complete)
+    STATS_NAME(twr_ss_nrng_stat_section, start_tx_error)
+STATS_NAME_END(twr_ss_nrng_stat_section)
+
+STATS_SECT_DECL(twr_ss_nrng_stat_section) g_twr_ss_nrng_stat;
+#define SS_STATS_INC(__X) STATS_INC(g_twr_ss_nrng_stat, __X)
+#else
+#define SS_STATS_INC(__X) {}
+#endif
+
+
 static bool rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs);
 static bool rx_timeout_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs);
 static bool rx_error_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs);
@@ -93,6 +111,17 @@ void twr_ss_nrng_pkg_init(void)
     g_cbs.inst_ptr = nrng;
     uwb_mac_append_interface(udev, &g_cbs);
     nrng_append_config(nrng, &g_rng_cfgs);
+
+#if MYNEWT_VAL(TWR_SS_NRNG_STATS)
+    int rc = stats_init(
+    STATS_HDR(g_twr_ss_nrng_stat),
+    STATS_SIZE_INIT_PARMS(g_twr_ss_nrng_stat, STATS_SIZE_32),
+    STATS_NAME_INIT_PARMS(twr_ss_nrng_stat_section));
+    assert(rc == 0);
+
+    rc = stats_register("twr_ss_nrng", STATS_HDR(g_twr_ss_nrng_stat));
+    assert(rc == 0);
+#endif
 }
 
 
@@ -126,7 +155,7 @@ rx_error_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
         return false;
 
     if(dpl_sem_get_count(&nrng->sem) == 0){
-        NRNG_STATS_INC(rx_error);
+        SS_STATS_INC(rx_error);
         dpl_error_t err = dpl_sem_release(&nrng->sem);
         assert(err == DPL_OK);
         return true;
@@ -150,7 +179,7 @@ rx_timeout_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
         return false;
 
     if(dpl_sem_get_count(&nrng->sem) == 0){
-        NRNG_STATS_INC(rx_timeout);
+        SS_STATS_INC(rx_timeout);
         // In the case of a NRNG timeout is used to mark the end of the request
         // and is used to call the completion callback
         if(!(SLIST_EMPTY(&inst->interface_cbs))){
@@ -179,7 +208,7 @@ reset_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
     if(dpl_sem_get_count(&nrng->sem) == 0){
         dpl_error_t err = dpl_sem_release(&nrng->sem);
         assert(err == DPL_OK);
-        NRNG_STATS_INC(reset);
+        SS_STATS_INC(reset);
         return true;
     }
     else
@@ -203,7 +232,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
 
     if(dpl_sem_get_count(&nrng->sem) == 1){
         // unsolicited inbound
-        NRNG_STATS_INC(rx_unsolicited);
+        SS_STATS_INC(rx_unsolicited);
         return false;
     }
 
@@ -213,7 +242,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
     if (_frame->dst_address != inst->my_short_address && _frame->dst_address != UWB_BROADCAST_ADDRESS)
         return true;
 
-    NRNG_STATS_INC(rx_complete);
+    SS_STATS_INC(rx_complete);
 
     switch(_frame->code){
         case UWB_DATA_CODE_SS_TWR_NRNG:

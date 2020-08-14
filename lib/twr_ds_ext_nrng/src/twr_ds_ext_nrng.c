@@ -65,6 +65,7 @@ static struct uwb_mac_interface g_cbs = {
             .final_cb = tx_final_cb,
 };
 
+#if MYNEWT_VAL(TWR_DS_EXT_NRNG_STATS)
 STATS_SECT_START(twr_ds_ext_nrng_stat_section)
     STATS_SECT_ENTRY(complete)
     STATS_SECT_ENTRY(rx_error)
@@ -78,6 +79,11 @@ STATS_NAME_START(twr_ds_ext_nrng_stat_section)
 STATS_NAME_END(twr_ds_ext_nrng_stat_section)
 
 static STATS_SECT_DECL(twr_ds_ext_nrng_stat_section) g_stat;
+#define DS_STATS_INC(__X) STATS_INC(g_stat, __X)
+#else
+#define DS_STATS_INC(__X) {}
+#endif
+
 
 static struct uwb_rng_config g_config = {
     .tx_holdoff_delay = MYNEWT_VAL(TWR_DS_EXT_NRNG_TX_HOLDOFF),         // Send Time delay in usec.
@@ -96,6 +102,7 @@ void twr_ds_ext_nrng_pkg_init(void){
     printf("{\"utime\": %lu,\"msg\": \"twr_ds_ext_nrng_pkg_init\"}\n",os_cputime_ticks_to_usecs(os_cputime_get32()));
     uwb_mac_append_interface(hal_dw1000_inst(0), &g_cbs);
 
+#if MYNEWT_VAL(TWR_DS_EXT_NRNG_STATS)
     int rc = stats_init(
     STATS_HDR(g_stat),
     STATS_SIZE_INIT_PARMS(g_stat, STATS_SIZE_32),
@@ -104,6 +111,7 @@ void twr_ds_ext_nrng_pkg_init(void){
 
     rc = stats_register("twr_ds_ext_nrng", STATS_HDR(g_stat));
     assert(rc == 0);
+#endif
 }
 
 
@@ -145,7 +153,7 @@ rx_timeout_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs){
     if(inst->fctrl != FCNTL_IEEE_N_RANGES_16){
         return false;
     }
-    STATS_INC(g_stat, rx_timeout);
+    DS_STATS_INC(g_stat, rx_timeout);
     assert(inst->nrng);
     switch(inst->nrng->code){
         case UWB_DATA_CODE_DS_TWR_NRNG_EXT ... UWB_DATA_CODE_DS_TWR_NRNG_EXT_FINAL:
@@ -191,7 +199,7 @@ rx_error_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs){
     if(inst->fctrl != FCNTL_IEEE_N_RANGES_16){
         return false;
     }
-    STATS_INC(g_stat, rx_error);
+    DS_STATS_INC(g_stat, rx_error);
     assert(inst->nrng);
     struct nrng_instance * nrng = inst->nrng;
     os_error_t err = os_sem_release(&nrng->sem);
@@ -371,7 +379,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
                     if (cbs!=NULL && cbs->start_tx_error_cb)
                         cbs->start_tx_error_cb(inst, cbs);
                 }else{
-                    STATS_INC(g_stat, complete);
+                    DS_STATS_INC(g_stat, complete);
                     os_sem_release(&nrng->sem);
                     struct uwb_mac_interface * cbs = NULL;
                     if(!(SLIST_EMPTY(&inst->interface_cbs))){
@@ -416,7 +424,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
                 if(idx == nnodes -1){
                     os_sem_release(&nrng->sem);
                     nrng->resp_count = 0;
-                    STATS_INC(g_stat, complete);
+                    DS_STATS_INC(g_stat, complete);
                     struct uwb_mac_interface * cbs = NULL;
                     if(!(SLIST_EMPTY(&inst->interface_cbs))){
                         SLIST_FOREACH(cbs, &inst->interface_cbs, next){
