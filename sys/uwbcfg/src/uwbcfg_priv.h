@@ -20,12 +20,12 @@
 #ifndef __UWBCFG_PRIV_H_
 #define __UWBCFG_PRIV_H_
 
-#include <log/log.h>
+#include <log/dpl_log.h>
 #define LOG_MODULE_UWBCFG (92)
-#define UC_INFO(...)     LOG_INFO(&_uwbcfg_log, LOG_MODULE_UWBCFG, __VA_ARGS__)
-#define UC_DEBUG(...)    LOG_DEBUG(&_uwbcfg_log, LOG_MODULE_UWBCFG, __VA_ARGS__)
-#define UC_WARN(...)     LOG_WARN(&_uwbcfg_log, LOG_MODULE_UWBCFG, __VA_ARGS__)
-#define UC_ERR(...)      LOG_ERROR(&_uwbcfg_log, LOG_MODULE_UWBCFG, __VA_ARGS__)
+#define UC_INFO(...)     LOG_INFO(__VA_ARGS__)
+#define UC_DEBUG(...)    LOG_DEBUG(__VA_ARGS__)
+#define UC_WARN(...)     LOG_WARN(__VA_ARGS__)
+#define UC_ERR(...)      LOG_ERROR(__VA_ARGS__)
 
 enum {
     CFGSTR_CH=0,
