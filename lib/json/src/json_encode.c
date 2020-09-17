@@ -21,6 +21,8 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "fmt.h"
+
 #ifdef __KERNEL__
 #include <linux/kernel.h>
 #else
@@ -70,13 +72,11 @@ json_encode_value(struct json_encoder *encoder, struct json_value *jv)
             encoder->je_write(encoder->je_arg, encoder->je_encode_buf, len);
             break;
         case JSON_VALUE_TYPE_UINT64:
-            len = sprintf(encoder->je_encode_buf, "%" PRIu64,
-                    jv->jv_val.u);
+            len = fmt_u64_dec(encoder->je_encode_buf, jv->jv_val.u);
             encoder->je_write(encoder->je_arg, encoder->je_encode_buf, len);
             break;
         case JSON_VALUE_TYPE_INT64:
-            len = sprintf(encoder->je_encode_buf, "%" PRIi64,
-                    jv->jv_val.u);
+            len = fmt_s64_dec(encoder->je_encode_buf, jv->jv_val.u);
             encoder->je_write(encoder->je_arg, encoder->je_encode_buf, len);
             break;
         case JSON_VALUE_TYPE_FLOAT64:
