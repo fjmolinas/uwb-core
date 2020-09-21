@@ -981,12 +981,17 @@ complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
     frame->local.rssi = uwb_calc_rssi(inst, inst->rxdiag);
     frame->local.fppl = uwb_calc_fppl(inst, inst->rxdiag);
 
+
     if (inst->capabilities.sts) {
         frame->local.flags.has_sts = inst->config.rx.stsMode != DWT_STS_MODE_OFF;
         frame->local.flags.has_valid_sts = !(inst->status.sts_ts_error || inst->status.sts_pream_error);
         frame->local.vrssi[0] = frame->local.rssi;
         frame->local.vrssi[1] = uwb_calc_seq_rssi(inst, inst->rxdiag, UWB_RXDIAG_STS);
         frame->local.vrssi[2] = uwb_calc_seq_rssi(inst, inst->rxdiag, UWB_RXDIAG_STS2);
+    } else {
+        frame->local.vrssi[0] = frame->local.rssi;
+        frame->local.vrssi[1] = DPL_FLOAT32_NAN();
+        frame->local.vrssi[2] = DPL_FLOAT32_NAN();
     }
 
     /* Postprocess in thread context */
