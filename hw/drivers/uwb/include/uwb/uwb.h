@@ -68,6 +68,7 @@ typedef enum uwb_extension_id {
 } uwb_extension_id_t;
 
 //! Device Roles
+#define UWB_ROLE_TAG          (0x0000)  //!< Act as a TAG
 #define UWB_ROLE_CCP_MASTER   (0x0001)  //!< Act as Clock Master for the network
 #define UWB_ROLE_PAN_MASTER   (0x0002)  //!< Act as Pan Master handing out slots and addresses
 #define UWB_ROLE_ANCHOR       (0x0004)  //!< Act as an Anchor, a non-mobile unit
